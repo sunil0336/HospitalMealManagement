@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery and TAT Table</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #FFA500;
+      color: white;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #FFA500;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .completed-message {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+  <script>
+    function markDelivered(row) {
+      const deliveredCheckbox = row.querySelector(".delivered-checkbox");
+      const deliveryTimeCell = row.querySelector(".delivery-time");
+
+      if (deliveredCheckbox.checked) {
+        const now = new Date();
+        const currentTime = now.toLocaleTimeString(); // Get current time
+        deliveryTimeCell.textContent = currentTime; // Set the time in the cell
+      } else {
+        deliveryTimeCell.textContent = ""; // Clear delivery time if unchecked
+      }
+
+      checkCompletion(); // Check if all tasks are completed
+    }
+
+    function checkCompletion() {
+      const rows = document.querySelectorAll(".delivery-row");
+      let allDelivered = true;
+
+      rows.forEach(row => {
+        const delivered = row.querySelector(".delivered-checkbox").checked;
+        if (!delivered) {
+          allDelivered = false;
+        }
+      });
+
+      const submitButton = document.getElementById("submit-btn");
+      submitButton.disabled = !allDelivered; // Enable button only if all deliveries are marked
+    }
+
+    function submitTasks() {
+      document.getElementById("tasks-completed-message").innerText =
+        "Tasks Completed!";
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Today's Orders</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Registration ID</th>
+          <th>Room No.</th>
+          <th>Delivered</th>
+          <th>Delivery Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="delivery-row">
+          <td>101</td>
+          <td>205</td>
+          <td>
+            <input type="checkbox" class="delivered-checkbox" onchange="markDelivered(this.parentElement.parentElement);">
+          </td>
+          <td class="delivery-time"></td>
+        </tr>
+        <tr class="delivery-row">
+          <td>102</td>
+          <td>206</td>
+          <td>
+            <input type="checkbox" class="delivered-checkbox" onchange="markDelivered(this.parentElement.parentElement);">
+          </td>
+          <td class="delivery-time"></td>
+        </tr>
+        <tr class="delivery-row">
+          <td>103</td>
+          <td>207</td>
+          <td>
+            <input type="checkbox" class="delivered-checkbox" onchange="markDelivered(this.parentElement.parentElement);">
+          </td>
+          <td class="delivery-time"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button id="submit-btn" class="submit-btn" disabled onclick="submitTasks()">Submit</button>
+
+    <div id="tasks-completed-message" class="completed-message"></div>
+  </div>
+</body>
+
+</html>

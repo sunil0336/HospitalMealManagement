@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F&B Partner Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #ff7700;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #ff7700;
+            color: white;
+        }
+        .total-orders {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .highlight {
+            color: #ff7700;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #tatEnsuranceTable td {
+            text-align: center;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>पोषणReady</h1>
+
+        <!-- Meal Orders Table -->
+        <h2>Meal Orders</h2>
+        <table id="mealOrdersTable">
+            <thead>
+                <tr>
+                    <th>Reg ID</th>
+                    <th>Chosen Meal</th>
+                    <th>Dietitian Permission</th>
+                    <th>Dietitian Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>P-1234</td>
+                    <td>
+                        <select>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                        </select>
+                    </td>
+                    <td>Yes</td>
+                    <td>Approved for low salt</td>
+                </tr>
+                <tr>
+                    <td>P-5678</td>
+                    <td>
+                        <select>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch" selected>Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                        </select>
+                    </td>
+                    <td>No</td>
+                    <td>High cholesterol, not approved</td>
+                </tr>
+                <tr>
+                    <td>P-9012</td>
+                    <td>
+                        <select>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner" selected>Dinner</option>
+                        </select>
+                    </td>
+                    <td>Yes</td>
+                    <td>No issues</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="total-orders">
+            Total Number of Approved Orders: <span id="totalOrders" class="highlight">0</span>
+        </div>
+
+        <!-- Delivery and TAT Table -->
+        <h2>Delivery and TAT</h2>
+        <table id="deliveryTable">
+            <thead>
+                <tr>
+                    <th>Reg ID</th>
+                    <th>Room/Ward Number</th>
+                    <th>Delivered</th>
+                    <th>Delivery Time (hh:mm)</th>
+                    <th>TAT (hh:mm:ss)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>P-1234</td>
+                    <td>101</td>
+                    <td>
+                        <select onchange="calculateTAT(this, 'Breakfast', '2025-01-29T07:00:00', 'tat1', 'P-1234')">
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </td>
+                    <td><input type="time" id="deliveryTimetat1"></td>
+                    <td id="tat1">-</td>
+                </tr>
+                <tr>
+                    <td>P-5678</td>
+                    <td>102</td>
+                    <td>
+                        <select onchange="calculateTAT(this, 'Lunch', '2025-01-29T12:00:00', 'tat2', 'P-5678')">
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </td>
+                    <td><input type="time" id="deliveryTimetat2"></td>
+                    <td id="tat2">-</td>
+                </tr>
+                <tr>
+                    <td>P-9012</td>
+                    <td>103</td>
+                    <td>
+                        <select onchange="calculateTAT(this, 'Dinner', '2025-01-29T18:00:00', 'tat3', 'P-9012')">
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </td>
+                    <td><input type="time" id="deliveryTimetat3"></td>
+                    <td id="tat3">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>TAT Ensurance</h2>
+        <table id="tatEnsuranceTable">
+            <thead>
+                <tr>
+                    <th>Reg ID</th>
+                    <th>TAT</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows will be inserted here -->
+            </tbody>
+        </table>
+
+        <div class="total-orders">
+            Total Number of Deliveries where TAT was Not Ensured: <span id="totalNotEnsured" class="highlight">0</span>
+        </div>
+    </div>
+
+    <script>
+        let notEnsuredData = []; // Array to keep track of not ensured deliveries
+
+        // Calculate Total Approved Orders
+        function calculateTotalOrders() {
+            const table = document.getElementById("mealOrdersTable");
+            const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+            let totalOrders = 0;
+
+            for (let row of rows) {
+                const permission = row.cells[2].innerText.trim();
+                if (permission === "Yes") {
+                    totalOrders++;
+                }
+            }
+
+            document.getElementById("totalOrders").innerText = totalOrders;
+        }
+
+        // Calculate TAT (Time of Delivery - Time Ordered)
+        function calculateTAT(selectElement, mealType, orderTime, tatId, regId) {
+            const isDelivered = selectElement.value === "Yes";
+            const tatCell = document.getElementById(tatId);
+            const deliveryTimeInput = document.getElementById('deliveryTimetat' + tatId.replace(/\D/g, ''));
+
+            if (isDelivered) {
+                const deliveryTimeValue = deliveryTimeInput.value;
+                if (deliveryTimeValue === "") {
+                    tatCell.innerText = "Invalid Time";
+                    return;
+                }
+
+                const deliveryTime = new Date('2025-01-29T' + deliveryTimeValue);
+                const orderedTime = new Date(orderTime);
+
+                if (isNaN(deliveryTime.getTime()) || isNaN(orderedTime.getTime())) {
+                    tatCell.innerText = "Invalid Time";
+                    return;
+                }
+
+                const diffMs = deliveryTime - orderedTime;
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+                tatCell.innerText = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+                // Check if TAT is ensured
+                let tatCondition;
+                switch (mealType) {
+                    case "Breakfast":
+                        tatCondition = 2 * 60 * 60 * 1000; // 2 hours in milliseconds (7:00 AM to 9:00 AM)
+                        break;
+                    case "Lunch":
+                        tatCondition = 3 * 60 * 60 * 1000; // 3 hours in milliseconds (12:00 PM to 3:00 PM)
+                        break;
+                    case "Dinner":
+                        tatCondition = 4 * 60 * 60 * 1000; // 4 hours in milliseconds (6:00 PM to 10:00 PM)
+                        break;
+                    default:
+                        tatCondition = 0;
+                        break;
+                }
+
+                if (diffMs > tatCondition) {
+                    notEnsuredData.push({ regId, mealType, deliveryTimeValue });
+                    updateTatEnsuranceTable();
+                }
+            }
+        }
+
+        // Update TAT Ensurance Table
+        function updateTatEnsuranceTable() {
+            const tableBody = document.getElementById("tatEnsuranceTable").getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+
+            notEnsuredData.forEach(data => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${data.regId}</td>
+                    <td>${data.mealType}</td>
+                    <td>Not Ensured</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById("totalNotEnsured").innerText = notEnsuredData.length;
+        }
+
+        // Initialize
+        calculateTotalOrders();
+    </script>
+</body>
+</html>

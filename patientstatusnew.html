@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Meal Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    input,
+    button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #FFA500;
+      color: white;
+    }
+
+    .delivered {
+      color: green;
+      font-weight: bold;
+    }
+
+    .pending {
+      color: red;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .no-delivery {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Enter Patient Details</h2>
+    <input type="text" id="patientIdInput" placeholder="Enter Patient ID">
+    <input type="text" id="roomNumberInput" placeholder="Enter Room Number">
+    <button onclick="showOrders()">Check Orders</button>
+  </div>
+
+  <div id="ordersSection" class="container hidden">
+    <h2>Room Number: <span id="roomNumberDisplay"></span></h2>
+    <h2>Today's Meals Status</h2>
+    <table id="mealTable">
+      <thead>
+        <tr>
+          <th>Meal</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="mealTableBody">
+        <!-- Meals will be dynamically populated -->
+      </tbody>
+    </table>
+    <p id="statusMessage" class="no-delivery hidden">No meals delivered yet.</p>
+    <button onclick="window.location.href = 'feedback2.html';">Next</button>
+  </div>
+
+  <script>
+    function showOrders() {
+      let patientId = document.getElementById("patientIdInput").value;
+      let roomNumber = document.getElementById("roomNumberInput").value;
+
+      if (patientId.trim() === "" || roomNumber.trim() === "") {
+        alert("Please enter both Patient ID and Room Number.");
+        return;
+      }
+
+      document.getElementById("roomNumberDisplay").textContent = roomNumber;
+
+      document.getElementById("ordersSection").classList.remove("hidden");
+
+      // Simulated meal delivery data
+      const mealStatus = {
+        breakfast: Math.random() > 0.5 ? "Delivered" : "Pending",
+        lunch: Math.random() > 0.5 ? "Delivered" : "Pending",
+        dinner: Math.random() > 0.5 ? "Delivered" : "Pending",
+      };
+
+      // Populate the table with meal status
+      populateTable(mealStatus);
+    }
+
+    function populateTable(mealStatus) {
+      const mealTableBody = document.getElementById("mealTableBody");
+      mealTableBody.innerHTML = ""; // Clear previous data
+
+      let hasDeliveredMeals = false;
+
+      // Loop through meals and add their statuses to the table
+      for (const [meal, status] of Object.entries(mealStatus)) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${capitalize(meal)}</td>
+          <td class="${status === 'Delivered' ? 'delivered' : 'pending'}">${status}</td>
+        `;
+        mealTableBody.appendChild(row);
+
+        if (status === "Delivered") {
+          hasDeliveredMeals = true;
+        }
+      }
+
+      // Show or hide the "No meals delivered yet" message
+      const statusMessage = document.getElementById("statusMessage");
+      if (hasDeliveredMeals) {
+        statusMessage.classList.add("hidden");
+      } else {
+        statusMessage.classList.remove("hidden");
+      }
+    }
+
+    function capitalize(word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+      
+    }
+  </script>
+
+</body>
+
+</html>
