@@ -119,23 +119,25 @@
                     break;
                 case "patient":
                     formFields.innerHTML = `
+                        <label for="patientId">Registration ID:</label>
+                        <input type="text" id="patientId" name="patientId" >
                         <label for="phone">Phone Number:</label>
                         <input type="tel" id="phone" name="phone" required oninput="generatePatientId(this.value)">
-                        <label for="patientId">Registration ID:</label>
-                        <input type="text" id="patientId" name="patientId" readonly>
                     `;
                     break;
                 default:
                     break;
             }
         }
-
+        var pid = "";
         function generatePatientId(phone) {
             const patientIdField = document.getElementById("patientId");
             // Check if the phone number is 10 digits
             if (/^\d{10}$/.test(phone)) {
                 const uniqueId = `P-${phone.slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
                 patientIdField.value = uniqueId;
+                pid = patientIdField.value;
+                alert(patientIdField.value);
             } else {
                 patientIdField.value = ""; // Clear ID if phone number is invalid
             }
@@ -156,7 +158,8 @@
                     window.location.href = "deliverynew.html"; // Redirect to Delivery Partner new page
                     break;
                 case "patient":
-                    window.location.href = "patientstatusnew.html"; // Redirect to Patient new status page
+                    // window.location.href = 'patientstatusnew.html??patientId=' + encodeURIComponent(pid);
+                    window.location.href = 'patientstatusnew.html?patientId=' + pid;
                     break;
                 default:
                     break;

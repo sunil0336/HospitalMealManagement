@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             padding: 0;
             background-color: #f7f7f7;
         }
+
         .container {
             max-width: 1200px;
             margin: 50px auto;
@@ -19,51 +21,62 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             text-align: center;
             color: #ff7700;
             margin-bottom: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             text-align: left;
             border: 1px solid #ddd;
         }
+
         th {
             background-color: #ff7700;
             color: white;
         }
+
         .total-orders {
             margin-bottom: 20px;
             font-size: 18px;
             color: #333;
         }
+
         .highlight {
             color: #ff7700;
             font-weight: bold;
         }
+
         select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         input[type="time"] {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         #tatEnsuranceTable td {
             text-align: center;
             padding: 8px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>पोषणReady</h1>
@@ -73,14 +86,15 @@
         <table id="mealOrdersTable">
             <thead>
                 <tr>
-                    <th>Reg ID</th>
+                    <th>Room No.</th>
                     <th>Chosen Meal</th>
                     <th>Dietitian Permission</th>
                     <th>Dietitian Comments</th>
+                    <th>Time</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <!-- <tr>
                     <td>P-1234</td>
                     <td>
                         <select>
@@ -91,31 +105,9 @@
                     </td>
                     <td>Yes</td>
                     <td>Approved for low salt</td>
-                </tr>
-                <tr>
-                    <td>P-5678</td>
-                    <td>
-                        <select>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch" selected>Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                        </select>
-                    </td>
-                    <td>No</td>
-                    <td>High cholesterol, not approved</td>
-                </tr>
-                <tr>
-                    <td>P-9012</td>
-                    <td>
-                        <select>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner" selected>Dinner</option>
-                        </select>
-                    </td>
-                    <td>Yes</td>
-                    <td>No issues</td>
-                </tr>
+                    <td>time</td>
+                </tr> -->
+
             </tbody>
         </table>
         <div class="total-orders">
@@ -194,6 +186,62 @@
     </div>
 
     <script>
+
+        async function fetchMealOrders() {
+            try {
+                const response = await fetch('http://localhost:3000/orders');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#mealOrdersTable tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                let totalOrders = 0;
+
+                const odr = data.filter(order => order.delivery_permission);       
+                document.getElementById("totalOrders").innerText = odr.length;
+
+
+                data.forEach(order => {
+                    const row = document.createElement('tr');
+
+                    // Create table data cells for each order
+                    row.innerHTML = `
+                        <td>${order.room_number}</td>
+                        <td>
+                        ${order.breakfast_status ? 'Breakfast' : ' '}<br>
+                        ${order.lunch_status ? 'Lunch' : ' '}<br>
+                        ${order.dinner_status ? 'Dinner' : ' '}
+                        </td>
+                        <td>${order.delivery_permission ? ('Yes') : 'No'}</td>
+                        <td>${order.comments ? order.comments : 'No Comments'}</td>
+                        
+                        <td>
+                        ${order.breakfast_status ? order.scheduled_time[0] : ' '}<br>
+                        ${order.lunch_status ? order.scheduled_time[1] : ' '}<br>
+                        ${order.dinner_status ? order.scheduled_time[2] : ' '}
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+
+
+
+            } catch (error) {
+                console.error('Error fetching meal orders:', error);
+            }
+        }
+
+        window.onload = fetchMealOrders;
+
+
+
+
+
+
+        // ******************************
+
+
         let notEnsuredData = []; // Array to keep track of not ensured deliveries
 
         // Calculate Total Approved Orders
@@ -286,4 +334,5 @@
         calculateTotalOrders();
     </script>
 </body>
+
 </html>

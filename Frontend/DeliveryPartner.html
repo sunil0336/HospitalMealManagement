@@ -33,7 +33,8 @@
       margin-bottom: 20px;
     }
 
-    th, td {
+    th,
+    td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: center;
@@ -67,6 +68,10 @@
       font-size: 18px;
       color: green;
       font-weight: bold;
+    }
+
+    button {
+      margin: 2px 0;
     }
   </style>
   <script>
@@ -111,47 +116,130 @@
   <div class="container">
     <h1>Today's Orders</h1>
 
-    <table>
+    <table id="thh">
       <thead>
         <tr>
-          <th>Registration ID</th>
           <th>Room No.</th>
-          <th>Delivered</th>
+          <th>Meals</th>
+          <th>Comments</th>
+          <th>Delivery Status</th>
           <th>Delivery Time</th>
         </tr>
       </thead>
       <tbody>
         <tr class="delivery-row">
-          <td>101</td>
           <td>205</td>
           <td>
-            <input type="checkbox" class="delivered-checkbox" onchange="markDelivered(this.parentElement.parentElement);">
+            Breakfast<br>
+            Lunch <br>
+            Dinner
           </td>
-          <td class="delivery-time"></td>
-        </tr>
-        <tr class="delivery-row">
-          <td>102</td>
-          <td>206</td>
           <td>
-            <input type="checkbox" class="delivered-checkbox" onchange="markDelivered(this.parentElement.parentElement);">
+            <button type="button" onclick="{alert('hii');}">Mark as Delivered</button><br>
+            <button type="button" onclick="{alert('hii');}">Delivered</button><br>
+            <button type="button" onclick="{alert('hii');}">Mark as Delivered</button>
           </td>
-          <td class="delivery-time"></td>
-        </tr>
-        <tr class="delivery-row">
-          <td>103</td>
-          <td>207</td>
           <td>
-            <input type="checkbox" class="delivered-checkbox" onchange="markDelivered(this.parentElement.parentElement);">
+            7:30 am to 8:00 am <br>
+            12:30 pm to 1:00 pm <br>
+            8:30 pm to 9:00 pm
           </td>
-          <td class="delivery-time"></td>
         </tr>
+
       </tbody>
     </table>
 
-    <button id="submit-btn" class="submit-btn" disabled onclick="submitTasks()">Submit</button>
 
     <div id="tasks-completed-message" class="completed-message"></div>
   </div>
+
+ <script>
+  async function fetchMealOrders() {
+  try {
+    const response = await fetch('http://localhost:3000/orders');
+    const data = await response.json();
+
+    const tableBody = document.querySelector('#thh tbody');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    data.forEach(order => {
+      const row = document.createElement('tr');
+
+      // Create table data cells for each order
+      row.innerHTML = `
+        <td>${order.room_number}</td>
+        <td>
+          ${order.breakfast_status ? 'Breakfast' : ''}<br>
+          ${order.lunch_status ? 'Lunch' : ''}<br>
+          ${order.dinner_status ? 'Dinner' : ''}
+        </td>
+        <td>${order.comments ? order.comments : 'No Comments'}</td>
+        <td>
+          ${order.breakfast_status ? (order.order_status[0] ? 'Delivered' : `<button class="update-btn" onclick="updateMealOrder(${order.id}, 1, this)">Mark as Delivered</button>`) : ''} <br />
+          ${order.lunch_status ? (order.order_status[1] ? 'Delivered' : `<button class="update-btn" onclick="updateMealOrder(${order.id}, 2, this)">Mark as Delivered</button>`) : ''} <br />
+          ${order.dinner_status ? (order.order_status[2] ? 'Delivered' : `<button class="update-btn" onclick="updateMealOrder(${order.id}, 3, this)">Mark as Delivered</button>`) : ' '} <br />
+        </td>
+        <td>
+          ${order.breakfast_status ? (order.delivered_time[0] ? order.delivered_time[0] : "Not Delivered") : ''}<br>
+          ${order.lunch_status ? (order.delivered_time[1] ? order.delivered_time[1] : "Not Delivered") : ''}<br>
+          ${order.dinner_status ? (order.delivered_time[2] ? order.delivered_time[2] : "Not Delivered") : ''}
+        </td>
+      `;
+
+      tableBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Error fetching meal orders:', error);
+  }
+}
+
+async function updateMealOrder(orderId, mealIndex, button) {
+  const now = new Date();
+  const deliveredTime = now.toLocaleTimeString(); // Get the current time for the delivered time
+  console.log(`Delivered Time: ${deliveredTime}` + " " + `${orderId}` + "  " + `${mealIndex}`);
+
+  try {
+    const response = await fetch(`http://localhost:3000/orders/${orderId}/update`, {
+      method: 'PUT', // PUT for updating
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        mealIndex, // Pass the mealIndex to identify which meal (Breakfast/Lunch/Dinner)
+        deliveredTime, // Pass the delivered time from frontend
+      }),
+    });
+
+    if (response.ok) {
+      alert('Meal marked as delivered');
+
+      // Get the parent row of the clicked button
+      const row = button.closest('tr');
+      const deliveryTimeCell = row.querySelectorAll('td')[4]; // Get the 5th column (Delivery Time)
+      let deliveredTimes = deliveryTimeCell.textContent.split(',');
+      deliveredTimes[mealIndex - 1] = deliveredTime; // Adjust for zero-based index
+      deliveryTimeCell.textContent = deliveredTimes.join(', ');
+
+      // Optionally, update the "Delivered" status for that meal
+      const statusCells = row.querySelectorAll('td')[3].querySelectorAll('button');
+      if (statusCells[mealIndex - 1]) {
+        statusCells[mealIndex - 1].textContent = 'Delivered'; // Update button text to "Delivered"
+        statusCells[mealIndex - 1].disabled = true; // Disable the button for that meal
+      }
+    } else {
+      alert('Failed to mark as delivered');
+    }
+  } catch (error) {
+    console.error('Error updating meal order:', error);
+  }
+}
+
+// Call the function to fetch data when the page loads
+window.onload = fetchMealOrders;
+
+
+ </script>
+
 </body>
 
 </html>

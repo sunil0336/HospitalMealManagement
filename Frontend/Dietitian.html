@@ -146,19 +146,24 @@
       alert("Order placed successfully!");
     }
 
-    function searchRegistrationID() {
-      const searchInput = document.getElementById("search-input").value.trim();
-      const rows = document.querySelectorAll(".dietitian-row");
+
+    function searchTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("tbody tr");
 
       rows.forEach(row => {
-        const regID = row.querySelector(".reg-id").textContent;
-        if (regID.includes(searchInput)) {
-          row.style.display = "table-row";
-        } else {
-          row.style.display = "none";
-        }
+        let match = false;
+        row.querySelectorAll("td").forEach(cell => {
+          if (cell.textContent.toLowerCase().includes(input)) {
+            match = true;
+          }
+        });
+
+        row.style.display = match ? "" : "none"; // Show/hide row based on match
       });
     }
+
+
   </script>
 </head>
 
@@ -197,67 +202,120 @@
     </div>
 
     <div class="search-container">
-      <input id="search-input" type="text" placeholder="Search Registration ID...">
-      <button onclick="searchRegistrationID()">Search</button>
+      <input id="searchInput" type="text" placeholder="Search Room No...">
+      <button onclick="searchTable()">Search</button>
+
     </div>
 
-    <table>
+    <table id="meal-orders-table">
       <thead>
         <tr>
-          <th>Registration ID</th>
-          <th>Choose Menu</th>
+          <th>Room Number</th>
+          <th>Breakfast</th>
+          <th>Lunch</th>
+          <th>Dinner</th>
           <th>Comments</th>
           <th>Delivery Permission</th>
+          <th>Action</th>
         </tr>
       </thead>
-      <tbody>
-        <tr class="dietitian-row">
-          <td class="reg-id">101</td>
-          <td>
-            <select class="menu-select select-box" onchange="checkSelections()">
-              <option value="">Select</option>
-              <option value="Breakfast">Breakfast</option>
-              <option value="Lunch">Lunch</option>
-              <option value="Dinner">Dinner</option>
-            </select>
-          </td>
-          <td>
-            <textarea class="comment-box" placeholder="Add comments..."></textarea>
-          </td>
-          <td>
-            <select class="delivery-select select-box" onchange="checkSelections()">
-              <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </td>
-        </tr>
-        <tr class="dietitian-row">
-          <td class="reg-id">102</td>
-          <td>
-            <select class="menu-select select-box" onchange="checkSelections()">
-              <option value="">Select</option>
-              <option value="Breakfast">Breakfast</option>
-              <option value="Lunch">Lunch</option>
-              <option value="Dinner">Dinner</option>
-            </select>
-          </td>
-          <td>
-            <textarea class="comment-box" placeholder="Add comments..."></textarea>
-          </td>
-          <td>
-            <select class="delivery-select select-box" onchange="checkSelections()">
-              <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
 
-    <button id="submit-btn" class="submit-btn" onclick="submitOrder()" disabled>Submit Order</button>
   </div>
+
+  <script>
+    async function fetchMealOrders() {
+      try {
+        const response = await fetch('http://localhost:3000/orders');
+        const data = await response.json();
+
+        const tableBody = document.querySelector('#meal-orders-table tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        data.forEach(order => {
+          const row = document.createElement('tr');
+
+          // Create table data cells for each order
+          row.innerHTML = `
+                <td>${order.room_number}</td>
+                <td><input type="checkbox" class="breakfast" ${order.breakfast_status ? 'checked' : ''}></td>
+                <td><input type="checkbox" class="lunch" ${order.lunch_status ? 'checked' : ''}></td>
+                <td><input type="checkbox" class="dinner" ${order.dinner_status ? 'checked' : ''}></td>
+                <td><input type="text" class="comments" value="${order.comments ? order.comments : ''}"></td>
+                
+                
+                <td><input type="checkbox" class="delivery_permission" ${order.delivery_permission ? 'checked' : ''}></td>
+                <td><button class="update-btn">Update</button></td>
+              `;
+
+          // Add the update functionality to the button
+          const updateButton = row.querySelector('.update-btn');
+          updateButton.addEventListener('click', () => updateMealOrder(order.id, row));
+
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching meal orders:', error);
+      }
+    }
+    async function updateMealOrder(orderId, row) {
+      const breakfastStatus = row.querySelector('.breakfast').checked;
+      const lunchStatus = row.querySelector('.lunch').checked;
+      const dinnerStatus = row.querySelector('.dinner').checked;
+      const comments = row.querySelector('.comments').value;
+      const deliveryPermission = row.querySelector('.delivery_permission').checked;
+
+      const updatedOrder = {
+        breakfast_status: breakfastStatus,
+        lunch_status: lunchStatus,
+        dinner_status: dinnerStatus,
+        comments: comments,
+        delivery_permission: deliveryPermission
+      };
+
+      try {
+        const response = await fetch(`http://localhost:3000/orders/${orderId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedOrder)
+        });
+
+        if (response.ok) {
+          const updatedData = await response.json();
+          alert('Order updated successfully');
+          console.log('Updated Order:', updatedData);
+        } else {
+          alert('Failed to update order');
+        }
+      } catch (error) {
+        console.error('Error updating meal order:', error);
+        alert('Error updating order');
+      }
+    }
+
+    document.getElementById("searchInput").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") { // Check if Enter is pressed
+        event.preventDefault(); // Prevent form submission (if inside a form)
+        searchTable();
+      }
+    });
+
+
+    // Call the function to fetch data when the page loads
+    window.onload = fetchMealOrders;
+
+
+
+
+
+
+
+
+  </script>
 </body>
+
 
 </html>
