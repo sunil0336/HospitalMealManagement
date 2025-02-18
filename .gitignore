@@ -1,0 +1,33 @@
+# Node.js dependencies (for the backend)
+backend/node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Environment variables (backend)
+backend/.env
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Build output (if you are generating any build files in the frontend, such as using a build tool)
+frontend/dist/
+frontend/build/
+
+# IDE and editor settings (for VSCode or JetBrains)
+.vscode/
+.idea/
+
+# Test coverage output (for backend tests)
+backend/coverage/
+
+# Miscellaneous
+*.bak
+*.tmp
+
+# Frontend specific ignores
+frontend/node_modules/
