@@ -25,7 +25,7 @@ VALUES ('Sunil Rathod', '9890957016');
 
 
 
--- new ***********
+-- **************** new ***********
 DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
