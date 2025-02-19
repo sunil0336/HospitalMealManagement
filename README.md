@@ -76,6 +76,30 @@ DB_URI=mongodb://your-db-uri
 Make sure you should create all database tables in your machine 
 
 ---
+## Database Connection Setup
+
+This project uses **PostgreSQL** for the database. Below are the steps to set up the database connection for the project.
+
+### Install PostgreSQL
+Make sure you have PostgreSQL installed and running on your local machine or use a remote PostgreSQL server.
+
+- You can download and install PostgreSQL from [here](https://www.postgresql.org/download/).
+
+### 2. Configure the Database Connection
+
+In the backend code, you'll find a PostgreSQL connection setup using the `pg` library and `Pool` from `pg` module. Update the connection parameters to match your environment.
+
+```javascript
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: 'postgres', // Replace with your PostgreSQL username
+  host: 'localhost', // Database server address (usually 'localhost' for local instances)
+  database: 'your_database_name', // Replace with your PostgreSQL database name
+  password: 'your_password', // Replace with your PostgreSQL password
+  port: 5432, // Default port for PostgreSQL
+});
+```
 
 ## Contributing
 
