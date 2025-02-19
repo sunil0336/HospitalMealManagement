@@ -1,14 +1,25 @@
 # HospitalMealManagement
 
-## Overview
-This is a Node.js application built with Express.js. It is designed to [describe the purpose of your project briefly].
-
 ## Prerequisites
 
 Before you begin, ensure you have the following installed on your machine:
 
 - [Node.js](https://nodejs.org/) (version 14 or above recommended)
 - [npm](https://www.npmjs.com/) (Node package manager)
+
+
+## Tech Stack
+
+### Frontend
+- **HTML**
+- **CSS**
+- **JavaScript (JS)**
+
+### Backend
+- **Express.js**
+
+### Database
+- **PostgreSQL (PSQL)**
 
 ## Setup
 
@@ -27,6 +38,7 @@ Navigate to the project directory and install the necessary dependencies using n
 ```bash
 cd HospitalMealManagement/Backend
 npm install
+npm install cors
 ```
 
 ### 3. Start the Backend Server
@@ -35,6 +47,8 @@ Once all dependencies are installed, you can start the Backend server by running
 
 ```bash
 node server.js
+or
+npm start
 ```
 
 By default, the server will start on [http://localhost:3000](http://localhost:3000).
@@ -57,7 +71,11 @@ DB_URI=mongodb://your-db-uri
 - You can now view the frontend in your browser and make changes to the HTML, CSS, and JS files. The browser will auto-refresh to show any updates you make.
 
 
+---
 
+Make sure you should create all database tables in your machine 
+
+---
 
 ## Contributing
 
